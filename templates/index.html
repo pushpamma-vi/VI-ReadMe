@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="VI-ReadMe - Camera-based text reader with text-to-speech">
+    <meta name="theme-color" content="#4CAF50">
+    <title>VI-ReadMe - Visual Text Reader</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📷 VI-ReadMe</h1>
+            <p class="subtitle">Point, Capture, Listen</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Camera Section -->
+            <div class="camera-section">
+                <div class="camera-container" id="cameraContainer">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    
+                    <!-- Camera overlay/guide -->
+                    <div class="camera-overlay">
+                        <div class="viewfinder"></div>
+                    </div>
+
+                    <!-- Captured image preview -->
+                    <div class="preview-container" id="previewContainer" style="display: none;">
+                        <img id="previewImage" alt="Captured image">
+                    </div>
+                </div>
+
+                <!-- Camera controls -->
+                <div class="controls">
+                    <button id="startCamera" class="btn btn-primary">
+                        <span class="icon">📷</span>
+                        Start Camera
+                    </button>
+                    <button id="captureBtn" class="btn btn-success" style="display: none;">
+                        <span class="icon">📸</span>
+                        Capture & Read
+                    </button>
+                    <button id="retakeBtn" class="btn btn-secondary" style="display: none;">
+                        <span class="icon">🔄</span>
+                        Retake
+                    </button>
+                </div>
+            </div>
+
+            <!-- Language Selection -->
+            <div class="language-section">
+                <label for="languageSelect">OCR Language:</label>
+                <select id="languageSelect" class="language-select">
+                    <option value="eng">English</option>
+                </select>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- Extracted Text Display -->
+            <div class="text-section" id="textSection" style="display: none;">
+                <h3>Extracted Text:</h3>
+                <div class="text-display" id="extractedText"></div>
+                
+                <!-- Speech Controls -->
+                <div class="speech-controls">
+                    <button id="readBtn" class="btn btn-speak">
+                        <span class="icon">🔊</span>
+                        Read Aloud
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" style="display: none;">
+                        <span class="icon">⏸️</span>
+                        Pause
+                    </button>
+                    <button id="stopBtn" class="btn btn-secondary" style="display: none;">
+                        <span class="icon">⏹️</span>
+                        Stop
+                    </button>
+                    <button id="copyBtn" class="btn btn-secondary">
+                        <span class="icon">📋</span>
+                        Copy Text
+                    </button>
+                </div>
+
+                <!-- Speech Rate Control -->
+                <div class="rate-control">
+                    <label for="rateSlider">Speech Rate: <span id="rateValue">1.0</span>x</label>
+                    <input type="range" id="rateSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <h3>How to Use:</h3>
+                <ol>
+                    <li>Tap "Start Camera" to activate your device camera</li>
+                    <li>Point camera at text (books, signs, documents)</li>
+                    <li>Tap "Capture & Read" to take a photo</li>
+                    <li>Wait for text extraction (OCR processing)</li>
+                    <li>Text will be read aloud automatically</li>
+                    <li>Use controls to pause, stop, or adjust speed</li>
+                </ol>
+            </div>
+
+            <!-- Features Info -->
+            <div class="features">
+                <h3>✨ Features:</h3>
+                <ul>
+                    <li>📷 Real-time camera access</li>
+                    <li>🔍 OCR text extraction (Tesseract)</li>
+                    <li>🔊 Text-to-speech (Web Speech API)</li>
+                    <li>📱 Mobile-friendly responsive design</li>
+                    <li>🌍 Multi-language support</li>
+                    <li>⚡ Fast and free to use</li>
+                </ul>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>VI-ReadMe &copy; 2026 | Open Source & Free</p>
+            <p class="tech-info">Powered by Flask, Tesseract OCR, Web Speech API</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Processing image...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

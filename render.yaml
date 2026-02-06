@@ -1,0 +1,20 @@
+# Render.com configuration for VI-ReadMe
+# Deploy with free tier
+
+services:
+  # VI-ReadMe Web Service
+  - type: web
+    name: vi-readme
+    env: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /health
+    autoDeploy: true
+    # Note: Free tier has cold starts after 15 min inactivity
+    # Upgrade to 'plan: starter' ($7/month) for always-on service
