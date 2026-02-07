@@ -62,6 +62,7 @@ def delete_file_immediately(file_path):
 def extract_text_from_image(image_path, lang='eng'):
     """
     Extract text from image using Tesseract OCR
+    Tries multiple PSM modes for best results
     
     Args:
         image_path: Path to the image file
@@ -74,12 +75,16 @@ def extract_text_from_image(image_path, lang='eng'):
         # Open image
         image = Image.open(image_path)
         
-        # Perform OCR with configuration for better accuracy
-        # --oem 3: Use LSTM OCR Engine Mode
-        # --psm 3: Automatic page segmentation (default)
-        custom_config = r'--oem 3 --psm 3'
-        
+        # Try PSM 3 first (automatic page segmentation - works for most text)
+        custom_config = r'--oem 3 --psm 3 -c preserve_interword_spaces=1'
         text = pytesseract.image_to_string(image, lang=lang, config=custom_config)
+        
+        # If result is poor, try PSM 6 (uniform block of text)
+        if len(text.strip()) < 10:
+            custom_config = r'--oem 3 --psm 6 -c preserve_interword_spaces=1'
+            alt_text = pytesseract.image_to_string(image, lang=lang, config=custom_config)
+            if len(alt_text.strip()) > len(text.strip()):
+                text = alt_text
         
         return text.strip()
     except Exception as e:
@@ -89,6 +94,7 @@ def extract_text_from_image(image_path, lang='eng'):
 def preprocess_image(image):
     """
     Preprocess image for better OCR results
+    Gentle enhancements that preserve all text
     
     Args:
         image: PIL Image object
@@ -96,13 +102,31 @@ def preprocess_image(image):
     Returns:
         Preprocessed PIL Image object
     """
+    from PIL import ImageEnhance, ImageFilter
+    
+    # Convert to RGB if needed
+    if image.mode not in ('RGB', 'L'):
+        image = image.convert('RGB')
+    
+    # Upscale if too small
+    width, height = image.size
+    if width < 1000 or height < 1000:
+        scale = max(1000 / width, 1000 / height)
+        new_size = (int(width * scale), int(height * scale))
+        image = image.resize(new_size, Image.Resampling.LANCZOS)
+    
     # Convert to grayscale
     image = image.convert('L')
     
-    # Enhance contrast (optional, can improve OCR accuracy)
-    from PIL import ImageEnhance
+    # Gentle enhancements to preserve both bold and regular text
+    enhancer = ImageEnhance.Sharpness(image)
+    image = enhancer.enhance(1.3)
+    
     enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(2)
+    image = enhancer.enhance(1.5)
+    
+    # Light denoising
+    image = image.filter(ImageFilter.MedianFilter(size=3))
     
     return image
 
